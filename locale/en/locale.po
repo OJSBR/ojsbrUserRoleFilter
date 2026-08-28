@@ -1,0 +1,19 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: ojsbrUserRoleFilter\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "plugins.generic.ojsbrUserRoleFilter.displayName"
+msgstr "Role filter for Users & Roles"
+
+msgid "plugins.generic.ojsbrUserRoleFilter.description"
+msgstr "Restores the role selector that OJS 3.4 had on the Users & Roles screen and that 3.5 replaced with a free-text search."
+
+msgid "plugins.generic.ojsbrUserRoleFilter.label"
+msgstr "Role"
+
+msgid "plugins.generic.ojsbrUserRoleFilter.allRoles"
+msgstr "All roles"
