@@ -1,0 +1,25 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: OJSBR\n"
+"Language-Team: OJSBR\n"
+"Language: mk\n"
+
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.displayName"
+msgstr "Филтер по улога за „Корисници и улоги“"
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.description"
+msgstr "Го враќа избирачот на улоги што OJS 3.4 го имаше на екранот „Корисници и улоги“, а 3.5 го замени со пребарување по слободен текст."
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.label"
+msgstr "Улога"
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.allRoles"
+msgstr "Сите улоги"

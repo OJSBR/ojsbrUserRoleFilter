@@ -1,0 +1,25 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: OJSBR\n"
+"Language-Team: OJSBR\n"
+"Language: ru\n"
+
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.displayName"
+msgstr "Фильтр по роли для «Пользователи и роли»"
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.description"
+msgstr "Возвращает выбор роли, который был в OJS 3.4 на экране «Пользователи и роли» и который в 3.5 заменили поиском по тексту."
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.label"
+msgstr "Роль"
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.allRoles"
+msgstr "Все роли"

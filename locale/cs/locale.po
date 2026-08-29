@@ -1,20 +1,25 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ojsbrUserRoleFilter\n"
-"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: OJSBR\n"
+"Language-Team: OJSBR\n"
+"Language: cs\n"
 
 
+#, fuzzy
 msgid "plugins.generic.ojsbrUserRoleFilter.displayName"
-msgstr "Filtro por papel em Usuários e Papéis"
+msgstr "Filtr rolí pro Uživatele a role"
 
+#, fuzzy
 msgid "plugins.generic.ojsbrUserRoleFilter.description"
-msgstr "Devolve o seletor de papel que o OJS 3.4 tinha na tela Usuários e Papéis e que o 3.5 substituiu por busca em texto livre."
+msgstr "Obnovuje výběr rolí, který měl OJS 3.4 na obrazovce Uživatelé a role a který verze 3.5 nahradila fulltextovým vyhledáváním."
 
+#, fuzzy
 msgid "plugins.generic.ojsbrUserRoleFilter.label"
-msgstr "Papel"
+msgstr "Role"
 
+#, fuzzy
 msgid "plugins.generic.ojsbrUserRoleFilter.allRoles"
-msgstr "Todos os papéis"
+msgstr "Všechny role"

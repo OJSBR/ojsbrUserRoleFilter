@@ -1,0 +1,25 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: OJSBR\n"
+"Language-Team: OJSBR\n"
+"Language: hu\n"
+
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.displayName"
+msgstr "Szerepkörszűrő a Felhasználók és szerepkörök képernyőn"
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.description"
+msgstr "Visszaállítja azt a szerepkörválasztót, amely az OJS 3.4 Felhasználók és szerepkörök képernyőjén volt, és amelyet a 3.5 szabadszavas keresésre cserélt."
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.label"
+msgstr "Szerepkör"
+
+#, fuzzy
+msgid "plugins.generic.ojsbrUserRoleFilter.allRoles"
+msgstr "Minden szerepkör"

@@ -76,7 +76,7 @@ other endpoint, and it is wrapped so it can never block the original request.
 
 | OJS/OPS | Branch | Release |
 |---|---|---|
-| 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(default)* | 1.0.0.0 |
+| 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(default)* | 1.0.0.1 |
 
 Requires PHP 8.2+.
 
@@ -165,7 +165,7 @@ endpoint, e é protegida para jamais impedir a requisição original.
 
 | OJS/OPS | Branch | Release |
 |---|---|---|
-| 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(padrão)* | 1.0.0.0 |
+| 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(padrão)* | 1.0.0.1 |
 
 Requer PHP 8.2+.
 

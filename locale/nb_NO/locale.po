@@ -1,19 +1,25 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: ojsbrUserRoleFilter\n"
-"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: OJSBR\n"
+"Language-Team: OJSBR\n"
+"Language: nb_NO\n"
 
+
+#, fuzzy
 msgid "plugins.generic.ojsbrUserRoleFilter.displayName"
-msgstr "Filtre par rôle pour Utilisateurs et rôles"
+msgstr "Rollefilter for Brukere og roller"
 
+#, fuzzy
 msgid "plugins.generic.ojsbrUserRoleFilter.description"
-msgstr "Rétablit le sélecteur de rôle qu'OJS 3.4 proposait sur la page Utilisateurs et rôles, remplacé dans 3.5 par une recherche en texte libre."
+msgstr "Gjenoppretter rollevelgeren som OJS 3.4 hadde på skjermen Brukere og roller, og som 3.5 erstattet med fritekstsøk."
 
+#, fuzzy
 msgid "plugins.generic.ojsbrUserRoleFilter.label"
-msgstr "Rôle"
+msgstr "Rolle"
 
+#, fuzzy
 msgid "plugins.generic.ojsbrUserRoleFilter.allRoles"
-msgstr "Tous les rôles"
+msgstr "Alle roller"
