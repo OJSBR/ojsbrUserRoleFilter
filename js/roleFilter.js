@@ -1,96 +1,87 @@
 /**
- * OJSBR 2026 — devolve o filtro por papel na tela Usuários e Papéis do OJS 3.5.
+ * @file plugins/generic/ojsbrUserRoleFilter/js/roleFilter.js
  *
- * Abordagem: em vez de buscar por fora e empurrar dados para dentro do store
- * (o que deixava contador e paginação defasados, porque eles vêm de um computed
- * que o store não expõe para escrita), interceptamos o fetch da própria aplicação
- * e acrescentamos o parâmetro do filtro. O fluxo nativo do OJS então cuida de
- * itens, contagem e paginação — tudo coerente, sem duplicar lógica.
+ * Copyright (c) 2026 OJSBR (https://ojsbr.com)
+ * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
  *
- * O lado PHP do plugin lê `ojsbrUserGroupIds` no hook API::users::params e aplica
- * o filtro na consulta pelo hook User::Collector.
+ * The role selector of the Users & Roles screen.
+ *
+ * The page is a compiled Vue application: pkp.registry.registerComponent and
+ * pkp.registry.storeExtendFn are the supported way in — the component is added
+ * to the items above the table, next to the search box. The store does not
+ * expose the query it sends, so the chosen group is written to a session cookie
+ * the plugin reads server-side, and the store is asked to fetch again. No
+ * request and no function of the application is replaced.
  */
 (function () {
 	'use strict';
 
-	var cfg = window.ojsbrUserRoleFilter;
-	if (!cfg || !window.pkp || !pkp.registry) { return; }
-
-	var estado = { roleId: '' };
-
-	/** Só a listagem de usuários; nunca /users/123 nem outros endpoints. */
-	function ehListagemDeUsuarios(url) {
-		if (!url) { return false; }
-		var semQuery = url.split('?')[0];
-		return /\/api\/v1\/users\/?$/.test(semQuery);
+	var config = window.ojsbrUserRoleFilter;
+	if (!config || !window.pkp || !pkp.registry) {
+		return;
 	}
 
-	function comFiltro(url) {
-		if (!estado.roleId || !ehListagemDeUsuarios(url) || url.indexOf('ojsbrUserGroupIds') !== -1) {
-			return url;
-		}
-		return url + (url.indexOf('?') === -1 ? '?' : '&')
-			+ 'ojsbrUserGroupIds=' + encodeURIComponent(estado.roleId);
+	/** Session cookie, valid for this journal's path only. */
+	function remember(groupId) {
+		document.cookie = config.cookie + '=' + encodeURIComponent(groupId || '')
+			+ '; path=/; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
 	}
-
-	var fetchOriginal = window.fetch;
-	window.fetch = function (entrada, opcoes) {
-		try {
-			if (typeof entrada === 'string') {
-				entrada = comFiltro(entrada);
-			} else if (entrada && entrada.url) {
-				var nova = comFiltro(entrada.url);
-				if (nova !== entrada.url) { entrada = new Request(nova, entrada); }
-			}
-		} catch (e) { /* nunca impedir a requisição original */ }
-		return fetchOriginal.apply(this, arguments.length > 1 ? [entrada, opcoes] : [entrada]);
-	};
 
 	/**
-	 * Força o store a refazer a busca. Ele observa [currentPage, searchPhrase];
-	 * alternar um espaço no fim muda o valor (dispara) sem mudar o resultado,
-	 * porque o Collector faz trim e quebra por \s+.
+	 * Asks the store to fetch again. It watches [currentPage, searchPhrase], so
+	 * going back to the first page is enough when the reader is not on it; on the
+	 * first page a trailing space changes the value without changing the result,
+	 * because the collector trims the phrase and splits it on whitespace.
 	 */
-	function recarregar() {
-		var s = pkp.registry.getPiniaStore('userAccessManager');
-		if (!s) { return; }
-		if (s.currentPage !== 1) { s.setCurrentPage(1); return; }   // já dispara sozinho
-		var atual = s.searchPhrase || '';
-		s.setSearchPhrase(/\s$/.test(atual) ? atual.replace(/\s+$/, '') : atual + ' ');
+	function reload() {
+		var store = pkp.registry.getPiniaStore('userAccessManager');
+		if (!store) {
+			return;
+		}
+		if (store.currentPage !== 1) {
+			store.setCurrentPage(1);
+			return;
+		}
+		var phrase = store.searchPhrase || '';
+		store.setSearchPhrase(/\s$/.test(phrase) ? phrase.replace(/\s+$/, '') : phrase + ' ');
 	}
 
 	pkp.registry.registerComponent('OjsbrUserRoleFilter', {
 		name: 'OjsbrUserRoleFilter',
 		template:
 			'<label class="ojsbr-role-filter">' +
-			'  <span class="ojsbr-role-filter__label">{{ rotulo }}</span>' +
-			'  <select v-model="roleId" @change="mudou" class="ojsbr-role-filter__select">' +
-			'    <option value="">{{ todos }}</option>' +
-			'    <option v-for="p in papeis" :key="p.id" :value="p.id">{{ p.name }}</option>' +
+			'  <span class="ojsbr-role-filter__label">{{ label }}</span>' +
+			'  <select v-model="groupId" @change="changed" class="ojsbr-role-filter__select">' +
+			'    <option value="">{{ allRoles }}</option>' +
+			'    <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>' +
 			'  </select>' +
 			'</label>',
 		data: function () {
 			return {
-				roleId: estado.roleId,
-				papeis: cfg.roles || [],
-				todos: (cfg.i18n && cfg.i18n.all) || 'Todos os papéis',
-				rotulo: (cfg.i18n && cfg.i18n.label) || 'Papel'
+				groupId: '',
+				roles: config.roles || [],
+				allRoles: (config.i18n && config.i18n.all) || 'All roles',
+				label: (config.i18n && config.i18n.label) || 'Role'
 			};
 		},
+		mounted: function () {
+			// The screen opens unfiltered, whatever an earlier visit left behind.
+			remember('');
+		},
 		methods: {
-			mudou: function () {
-				estado.roleId = this.roleId;
-				recarregar();
+			changed: function () {
+				remember(this.groupId);
+				reload();
 			}
 		}
 	});
 
-	// O extender pode entregar a função original OU já o resultado dela.
-	// Aceitamos os dois para não perder a busca nativa (UserAccessManagerActionSearch).
+	// The extender hands over the original function or the list it returned:
+	// both are accepted, so the native search box is never lost.
 	pkp.registry.storeExtendFn('userAccessManager', 'getTopItems', function (original, args) {
 		var base = (typeof original === 'function') ? original(args) : original;
-		var itens = Array.isArray(base) ? base.slice() : [];
-		itens.push({ component: 'OjsbrUserRoleFilter', props: {} });
-		return itens;
+		var items = Array.isArray(base) ? base.slice() : [];
+		items.push({component: 'OjsbrUserRoleFilter', props: {}});
+		return items;
 	});
 })();

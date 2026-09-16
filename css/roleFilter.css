@@ -1,0 +1,29 @@
+/**
+ * @file plugins/generic/ojsbrUserRoleFilter/css/roleFilter.css
+ *
+ * Copyright (c) 2026 OJSBR (https://ojsbr.com)
+ * Distributed under the GNU GPL v3. For full terms see the file docs/COPYING.
+ *
+ * The role selector, next to the search box of the Users & Roles screen.
+ */
+
+.ojsbr-role-filter {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin-inline-start: 0.5rem;
+}
+
+.ojsbr-role-filter__label {
+	font-size: 0.875rem;
+	white-space: nowrap;
+}
+
+.ojsbr-role-filter__select {
+	max-width: 18rem;
+	padding: 0.25rem 0.5rem;
+	border: 1px solid #bbb;
+	border-radius: 2px;
+	background: #fff;
+	font-size: 0.875rem;
+}

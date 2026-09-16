@@ -1,14 +1,15 @@
-# User Role Filter — OJS plugin
+# User Role Filter — OJS and OMP plugin
 
 > Brings back the **role filter** that **OJS 3.4** had on *Users & Roles* and that **OJS 3.5**
 > replaced with a single free-text search box.
 > Developed and maintained by **[OJSBR](https://ojsbr.com)**.
 
 [![OJS](https://img.shields.io/badge/OJS-3.5-brightgreen)](https://pkp.sfu.ca/ojs/)
-[![Version](https://img.shields.io/badge/version-1.0.0.1-blue)](version.xml)
+[![OMP](https://img.shields.io/badge/OMP-3.5-brightgreen)](https://pkp.sfu.ca/omp/)
+[![Version](https://img.shields.io/badge/version-1.0.1.0-blue)](version.xml)
 [![License](https://img.shields.io/badge/license-GPL--3.0-lightgrey)](LICENSE)
 
-**⬇️ Install package:** [OJS 3.5](https://github.com/OJSBR/ojsbrUserRoleFilter/releases/download/1.0.0.1/ojsbrUserRoleFilter-1.0.0.1.tar.gz) — or browse all [Releases](../../releases).
+**⬇️ Install package:** [OJS / OMP 3.5](https://github.com/OJSBR/ojsbrUserRoleFilter/releases/download/1.0.1.0/ojsbrUserRoleFilter-1.0.1.0.tar.gz) — or browse all [Releases](../../releases).
 
 ## Why this plugin exists
 
@@ -34,8 +35,8 @@ search."* Until that lands, this plugin provides it.
 
 ## What it does
 
-Adds a **Role** selector next to the native search box on *Users & Roles*. Choosing a role lists
-only the users actually enrolled in it. The native search keeps working, and both combine.
+Adds a **Role** selector next to the native search box on *Users & Roles*, in OJS and in OMP.
+Choosing a role lists only the users actually enrolled in it. The native search keeps working, and both combine.
 
 Filtering happens **on the server**, not in the browser: the full result set is filtered, not just
 the page you are looking at.
@@ -46,8 +47,8 @@ Three hooks, because the obvious route does not work:
 
 | Hook | Role |
 |---|---|
-| `TemplateManager::display` | injects the journal's role list and loads the script, on that screen only |
-| `API::users::params` | reads `ojsbrUserGroupIds` and validates it against the journal's own groups |
+| `TemplateManager::display` | injects the role list of the journal or press and loads the script, on that screen only |
+| `API::users::params` | reads the `ojsbrUserGroupIds` cookie and validates it against the groups of that journal or press |
 | **`User::Collector`** | adds the `whereExists` clause to the query the Collector just built |
 
 The third one is the key. `api/v1/users` only whitelists `roleIds`, which is too coarse — *Journal
@@ -63,23 +64,44 @@ attached to the toolbar with `storeExtendFn('userAccessManager', 'getTopItems', 
 journal. Tampering with the parameter to reach another context returns an empty list, never
 someone else's data.
 
-## Consistent counts
+## Consistent counts, nothing of the application replaced
 
 Rather than fetching separately and pushing rows into the store — which leaves the header count and
 the pagination footer stale, because they come from a computed the store does not expose for
-writing — the plugin **intercepts the application own fetch** and appends the filter parameter. The
-native OJS flow then produces items, count and pagination together, so everything agrees.
+writing — the plugin lets the application make its own request. The store exposes its search phrase
+and its page, but not the query it sends, so the chosen role is recorded in a **session cookie of
+the plugin** and the store is asked to fetch again; the request carries the cookie, and the server
+side reads it. Items, count and pagination come from the native flow and always agree.
 
-The interception is narrow: only the `/api/v1/users` listing, never `/api/v1/users/123` or any
-other endpoint, and it is wrapped so it can never block the original request.
+No function of the page is replaced — `window.fetch` included — and no file of the core, PHP or
+compiled bundle, is patched. The cookie is read only by this plugin, on the users listing, and its
+value is a list of numbers validated against the groups of the current journal or press.
 
 ## Compatibility & branches
 
-| OJS/OPS | Branch | Release |
+| Application | Branch | Release |
 |---|---|---|
-| 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(default)* | 1.0.0.1 |
+| OJS 3.5.x and OMP 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(default)* | 1.0.1.0 |
 
 Requires PHP 8.2+.
+
+## Tests
+
+- **PHPUnit** (`tests/`): what the cookie may ask for, that only groups of the current journal or
+  press survive, the clause added to the query and its bindings, the screen the selector is loaded
+  on, and the assets it loads.
+- **Cypress** (`cypress/tests/functional/`): enables the plugin, opens Users & Roles, picks a role
+  actually held by a user and checks that every listed user holds it, then goes back to all roles
+  and gets the whole list again. Each check fails with the part it covers removed.
+- Verified on OJS 3.5.0.3 and OMP 3.5.0.3, each with the whole suite.
+
+Tests are kept in the repository and are not part of the release package.
+
+## AI use
+
+Generative AI (Claude, by Anthropic) was used to write and run tests, improve the code and bring
+it in line with PKP standards. Every change is reviewed and tested by OJSBR, which is responsible
+for the published releases.
 
 ## Installation
 
@@ -136,8 +158,8 @@ Três ganchos, porque o caminho óbvio não funciona:
 
 | Gancho | Papel |
 |---|---|
-| `TemplateManager::display` | injeta a lista de papéis da revista e carrega o script, só nessa tela |
-| `API::users::params` | lê `ojsbrUserGroupIds` e valida contra os grupos da própria revista |
+| `TemplateManager::display` | injeta a lista de papéis da revista ou editora e carrega o script, só nessa tela |
+| `API::users::params` | lê o cookie `ojsbrUserGroupIds` e valida contra os grupos da própria revista ou editora |
 | **`User::Collector`** | acrescenta o `whereExists` à consulta recém-montada pelo Collector |
 
 O terceiro é a peça central. A `api/v1/users` só aceita `roleIds`, grosseiro demais — *Gerente da
@@ -152,23 +174,44 @@ com `storeExtendFn('userAccessManager', 'getTopItems', …)`.
 **Segurança.** Os ids de grupo pedidos são cruzados com os grupos que pertencem à revista corrente.
 Alterar o parâmetro para alcançar outro contexto devolve lista vazia, nunca dado alheio.
 
-### Contadores coerentes
+### Contadores coerentes, sem substituir nada da aplicação
 
 Em vez de buscar por fora e empurrar linhas para o store — o que deixa o contador do cabeçalho e o
 rodapé de paginação defasados, porque vêm de um computed que o store não expõe para escrita —, o
-plugin **intercepta o fetch da própria aplicação** e acrescenta o parâmetro do filtro. O fluxo
-nativo do OJS então produz itens, contagem e paginação juntos, e tudo fica coerente.
+plugin deixa a própria aplicação fazer a requisição. O store expõe a frase de busca e a página, mas
+não a consulta que envia; então o papel escolhido é registrado num **cookie de sessão do plugin** e
+o store é solicitado a buscar de novo. A requisição leva o cookie, e o lado servidor o lê. Itens,
+contagem e paginação vêm do fluxo nativo e ficam sempre coerentes.
 
-A interceptação é estreita: apenas a listagem `/api/v1/users`, nunca `/api/v1/users/123` nem outro
-endpoint, e é protegida para jamais impedir a requisição original.
+Nenhuma função da página é substituída — `window.fetch` inclusive — e nenhum arquivo do núcleo, PHP
+ou pacote compilado, é alterado. O cookie só é lido por este plugin, na listagem de usuários, e seu
+valor é uma lista de números validada contra os grupos da revista ou editora corrente.
 
 ### Compatibilidade e branches
 
-| OJS/OPS | Branch | Release |
+| Aplicação | Branch | Release |
 |---|---|---|
-| 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(padrão)* | 1.0.0.1 |
+| OJS 3.5.x e OMP 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(padrão)* | 1.0.1.0 |
 
 Requer PHP 8.2+.
+
+### Testes
+
+- **PHPUnit** (`tests/`): o que o cookie pode pedir, que só sobrevivem grupos da revista ou editora
+  corrente, a cláusula acrescentada à consulta e seus bindings, a tela em que o seletor é carregado
+  e os arquivos que ele carrega.
+- **Cypress** (`cypress/tests/functional/`): liga o plugin, abre Usuários e Papéis, escolhe um papel
+  realmente atribuído a alguém e confere que todo usuário listado o tem; depois volta para todos os
+  papéis e recebe a lista inteira. Cada verificação reprova com a parte que ela cobre removida.
+- Verificado no OJS 3.5.0.3 e no OMP 3.5.0.3, com a suíte inteira em cada um.
+
+Os testes ficam no repositório e não fazem parte do pacote da release.
+
+### Uso de IA
+
+Foi usada IA generativa (Claude, da Anthropic) para escrever e rodar testes, melhorar o código e
+alinhá-lo aos padrões da PKP. Toda mudança é revisada e testada pela OJSBR, que responde pelas
+releases publicadas.
 
 ### Instalação
 
