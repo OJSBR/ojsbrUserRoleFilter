@@ -137,6 +137,34 @@ describe('User Role Filter plugin', function() {
 		});
 	});
 
+
+	// The choice travels in a cookie of the browser, which anyone can write. A
+	// value that names no group of this journal must be dropped: the list has to
+	// come back whole, never empty and never filtered by something the journal
+	// does not have.
+	it('Drops a group that is not of this journal when it is forged into the cookie', function() {
+		login(adminUser, adminPassword);
+		openUsers();
+
+		// How many users the journal has, with no choice made.
+		userRows().then(($all) => {
+			const everyone = $all.length;
+			expect(everyone, 'the journal has users to list').to.be.at.least(1);
+
+			// A group id that belongs to no journal, written by hand.
+			cy.setCookie('ojsbrUserRoleFilter', '999999');
+			openUsers();
+			userRows().should('have.length', everyone);
+
+			// And something that is not a number either.
+			cy.setCookie('ojsbrUserRoleFilter', '../../etc/passwd');
+			openUsers();
+			userRows().should('have.length', everyone);
+
+			cy.clearCookie('ojsbrUserRoleFilter');
+		});
+	});
+
 	it('Lists only the users who hold the chosen role, and everyone again afterwards', function() {
 		login(adminUser, adminPassword);
 		openUsers();
