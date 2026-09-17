@@ -143,23 +143,33 @@ describe('User Role Filter plugin', function() {
 	// come back whole, never empty and never filtered by something the journal
 	// does not have.
 	it('Drops a group that is not of this journal when it is forged into the cookie', function() {
+		// What the plugin changes is the answer the screen asks for, and that is
+		// what is compared: counting rows would count a table still being drawn.
+		const listedUsers = () => {
+			cy.intercept('GET', '**/api/v1/users?*').as('userList');
+			cy.visit(pageUrl('management/settings/access') + '?reload=' + Date.now());
+			cy.get(select, {timeout: 60000}).should('exist');
+
+			return cy.wait('@userList', {timeout: 60000}).then((interception) => {
+				const body = interception.response.body;
+				const answer = typeof body === 'string' ? JSON.parse(body) : body;
+
+				return cy.wrap(Number(answer.itemsMax), {log: false});
+			});
+		};
+
 		login(adminUser, adminPassword);
-		openUsers();
 
 		// How many users the journal has, with no choice made.
-		userRows().then(($all) => {
-			const everyone = $all.length;
+		listedUsers().then((everyone) => {
 			expect(everyone, 'the journal has users to list').to.be.at.least(1);
-
 			// A group id that belongs to no journal, written by hand.
 			cy.setCookie('ojsbrUserRoleFilter', '999999');
-			openUsers();
-			userRows().should('have.length', everyone);
+			listedUsers().should('eq', everyone);
 
 			// And something that is not a number either.
 			cy.setCookie('ojsbrUserRoleFilter', '../../etc/passwd');
-			openUsers();
-			userRows().should('have.length', everyone);
+			listedUsers().should('eq', everyone);
 
 			cy.clearCookie('ojsbrUserRoleFilter');
 		});
