@@ -6,10 +6,10 @@
 
 [![OJS](https://img.shields.io/badge/OJS-3.5-brightgreen)](https://pkp.sfu.ca/ojs/)
 [![OMP](https://img.shields.io/badge/OMP-3.5-brightgreen)](https://pkp.sfu.ca/omp/)
-[![Version](https://img.shields.io/badge/version-1.0.1.0-blue)](version.xml)
+[![Version](https://img.shields.io/badge/version-1.0.1.1-blue)](version.xml)
 [![License](https://img.shields.io/badge/license-GPL--3.0-lightgrey)](LICENSE)
 
-**⬇️ Install package:** [OJS / OMP 3.5](https://github.com/OJSBR/ojsbrUserRoleFilter/releases/download/1.0.1.0/ojsbrUserRoleFilter-1.0.1.0.tar.gz) — or browse all [Releases](../../releases).
+**⬇️ Install package:** [OJS / OMP 3.5](https://github.com/OJSBR/ojsbrUserRoleFilter/releases/download/1.0.1.1/ojsbrUserRoleFilter-1.0.1.1.tar.gz) — or browse all [Releases](../../releases).
 
 ## Why this plugin exists
 
@@ -81,7 +81,7 @@ value is a list of numbers validated against the groups of the current journal o
 
 | Application | Branch | Release |
 |---|---|---|
-| OJS 3.5.x and OMP 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(default)* | 1.0.1.0 |
+| OJS 3.5.x and OMP 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(default)* | 1.0.1.1 |
 
 Requires PHP 8.2+.
 
@@ -191,7 +191,7 @@ valor é uma lista de números validada contra os grupos da revista ou editora c
 
 | Aplicação | Branch | Release |
 |---|---|---|
-| OJS 3.5.x e OMP 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(padrão)* | 1.0.1.0 |
+| OJS 3.5.x e OMP 3.5.x | [`stable-3_5_0`](../../tree/stable-3_5_0) *(padrão)* | 1.0.1.1 |
 
 Requer PHP 8.2+.
 

@@ -35,6 +35,7 @@ namespace APP\plugins\generic\ojsbrUserRoleFilter;
 
 use APP\core\Application;
 use APP\template\TemplateManager;
+use PKP\core\Core;
 use PKP\plugins\Hook;
 use PKP\userGroup\UserGroup;
 
@@ -146,11 +147,16 @@ class OjsbrUserRoleFilterPlugin extends \PKP\plugins\GenericPlugin
 
         $query = $args[0];
         $ids = $this->requestedGroupIds;
+        $now = Core::getCurrentDate();
 
-        $query->whereExists(function ($subQuery) use ($ids) {
+        // Only roles the user holds now or will hold: since 3.5 an ended role
+        // keeps its row (with date_end) for the editorial history, and a former
+        // editor must not be listed under that role.
+        $query->whereExists(function ($subQuery) use ($ids, $now) {
             $subQuery->from('user_user_groups as ojsbr_uug')
                 ->whereColumn('ojsbr_uug.user_id', '=', 'u.user_id')
-                ->whereIn('ojsbr_uug.user_group_id', $ids);
+                ->whereIn('ojsbr_uug.user_group_id', $ids)
+                ->where(fn ($q) => $q->whereNull('ojsbr_uug.date_end')->orWhere('ojsbr_uug.date_end', '>', $now));
         });
 
         return Hook::CONTINUE;
