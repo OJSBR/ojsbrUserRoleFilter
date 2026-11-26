@@ -102,8 +102,14 @@ class OjsbrUserRoleFilterTest extends PKPTestCase
         $this->assertStringContainsString('exists', strtolower($sql));
         $this->assertStringContainsString('user_user_groups', $sql);
         $this->assertStringContainsString('ojsbr_uug', $sql);
-        // The ids travel as bindings, never inlined in the SQL.
-        $this->assertSame([7, 9], $query->getBindings());
+        $this->assertStringContainsString('date_end', $sql);
+        // The ids and the current time travel as bindings, never inlined in the SQL:
+        // a role whose date_end has passed no longer counts.
+        $bindings = $query->getBindings();
+        $this->assertSame([7, 9], array_slice($bindings, 0, 2));
+        $this->assertCount(3, $bindings);
+        $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', (string) $bindings[2]);
+        $this->assertStringNotContainsString((string) $bindings[2], $sql);
     }
 
     public function testTheSelectorIsLoadedOnTheUsersScreenOnly(): void
